@@ -8,205 +8,68 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #1a1a1a;
-    background: #f5f5f3;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .container {
-    max-width: 820px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e5e5e2;
-    padding: 2rem 2.5rem;
-  }
-
-  h1 {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #111;
-  }
-
-  .subtitle {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 2rem;
-  }
-
-  .upload-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .drop-zone {
-    border: 1.5px dashed #ccc;
-    border-radius: 10px;
-    padding: 1.25rem;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; line-height: 1.6; color: #1a1a1a; background: #f5f5f3; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 820px; margin: 0 auto; background: #fff; border-radius: 12px; border: 1px solid #e5e5e2; padding: 2rem 2.5rem; }
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+  .api-box { background: #f9f9f7; border: 1px solid #e5e5e2; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .api-box label { font-size: 12px; color: #555; display: block; margin-bottom: 6px; font-weight: 500; }
+  .api-row { display: flex; gap: 8px; align-items: center; }
+  .api-row input { flex: 1; padding: 8px 10px; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; outline: none; }
+  .api-row input:focus { border-color: #888; }
+  .api-hint { font-size: 11px; color: #999; margin-top: 5px; }
+  .api-hint a { color: #555; }
+  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .drop-zone { border: 1.5px dashed #ccc; border-radius: 10px; padding: 1.25rem; text-align: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
   .drop-zone:hover { background: #fafaf8; }
-  .drop-zone.loaded { border-color: #4caf50; }
-
+  .drop-zone.loaded { border-color: #4caf50; border-style: solid; }
   .drop-zone i { font-size: 22px; color: #aaa; display: block; margin-bottom: 8px; }
   .drop-zone .drop-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
   .drop-zone .drop-hint { font-size: 12px; color: #999; }
-
-  .fields-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .field label {
-    display: block;
-    font-size: 12px;
-    color: #777;
-    margin-bottom: 4px;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 13px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    outline: none;
-    font-family: inherit;
-    color: #1a1a1a;
-    background: #fff;
-    transition: border-color 0.15s;
-  }
-
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; color: #777; margin-bottom: 4px; }
+  input[type="text"] { width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; outline: none; font-family: inherit; color: #1a1a1a; background: #fff; transition: border-color 0.15s; }
   input[type="text"]:focus { border-color: #888; }
-
-  button#run-btn {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 1.25rem;
-    transition: opacity 0.15s;
-  }
-
+  button#run-btn { width: 100%; padding: 10px; font-size: 14px; font-weight: 500; font-family: inherit; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 1.25rem; transition: opacity 0.15s; }
   button#run-btn:disabled { opacity: 0.35; cursor: not-allowed; }
   button#run-btn:hover:not(:disabled) { opacity: 0.85; }
-
-  #status {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 12px;
-    min-height: 18px;
-  }
-
+  #status { font-size: 13px; color: #888; margin-bottom: 12px; min-height: 18px; }
   #status.danger { color: #c0392b; }
   #status.success { color: #27ae60; }
-
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .summary-card {
-    border-radius: 8px;
-    padding: 12px;
-    text-align: center;
-  }
-
+  .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+  .summary-card { border-radius: 8px; padding: 12px; text-align: center; }
   .summary-card .count { font-size: 24px; font-weight: 600; }
   .summary-card .label { font-size: 12px; margin-top: 2px; }
-
-  .summary-card.s-green { background: #eafaf1; }
-  .summary-card.s-green .count { color: #27ae60; }
-  .summary-card.s-green .label { color: #27ae60; }
-
-  .summary-card.s-amber { background: #fef9e7; }
-  .summary-card.s-amber .count { color: #d68910; }
-  .summary-card.s-amber .label { color: #d68910; }
-
-  .summary-card.s-red { background: #fdedec; }
-  .summary-card.s-red .count { color: #c0392b; }
-  .summary-card.s-red .label { color: #c0392b; }
-
-  .result-card {
-    border: 1px solid #e5e5e2;
-    border-radius: 10px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 10px;
-  }
-
-  .result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
+  .s-green { background: #eafaf1; } .s-green .count, .s-green .label { color: #27ae60; }
+  .s-amber { background: #fef9e7; } .s-amber .count, .s-amber .label { color: #d68910; }
+  .s-red { background: #fdedec; } .s-red .count, .s-red .label { color: #c0392b; }
+  .result-card { border: 1px solid #e5e5e2; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .result-id { font-size: 13px; font-weight: 500; }
-
-  .badge {
-    font-size: 12px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 999px;
-  }
-
+  .badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; }
   .badge.consistent { background: #eafaf1; color: #27ae60; }
   .badge.needs_review { background: #fef9e7; color: #d68910; }
   .badge.likely_fake { background: #fdedec; color: #c0392b; }
-
   .result-reason { font-size: 13px; color: #666; margin-bottom: 8px; }
-
   .red-flags { font-size: 12px; color: #c0392b; margin-bottom: 8px; }
   .red-flags div { margin-bottom: 2px; }
-
-  .responses-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    font-size: 12px;
-    color: #888;
-    border-top: 1px solid #f0f0ee;
-    padding-top: 10px;
-    margin-top: 4px;
-  }
-
+  .responses-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: #888; border-top: 1px solid #f0f0ee; padding-top: 10px; margin-top: 4px; }
   .responses-grid strong { display: block; color: #333; margin-bottom: 3px; font-size: 12px; }
-
-  @media (max-width: 600px) {
-    .container { padding: 1.25rem; }
-    .upload-grid, .fields-grid, .responses-grid { grid-template-columns: 1fr; }
-    .summary-grid { grid-template-columns: repeat(3, 1fr); }
-  }
+  @media (max-width: 600px) { .container { padding: 1.25rem; } .upload-grid, .fields-grid, .responses-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-
 <div class="container">
-
   <h1>Reverse Mentoring — Response Checker</h1>
   <p class="subtitle">Upload mentor and mentee Excel files from Microsoft Forms. The tool checks if responses are consistent for each session pair.</p>
+
+  <div class="api-box">
+    <label>Gemini API Key</label>
+    <div class="api-row">
+      <input type="password" id="api-key" placeholder="Paste your Gemini API key here (starts with AIza...)">
+    </div>
+    <p class="api-hint">Free key — no credit card needed. Get yours at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a> → Sign in with Google → Create API key. Key is never stored.</p>
+  </div>
 
   <div class="upload-grid">
     <div class="drop-zone" id="mentor-drop" onclick="document.getElementById('mentor-file').click()" ondragover="ev(event,'mentor-drop')" ondragleave="lv('mentor-drop')" ondrop="dp(event,'mentor')">
@@ -224,152 +87,107 @@
   </div>
 
   <div class="fields-grid">
-    <div class="field">
-      <label>Column name: Pair / Session ID</label>
-      <input type="text" id="col-pair" placeholder="e.g. Pair ID or Session No">
-    </div>
-    <div class="field">
-      <label>Column name: Topic discussed</label>
-      <input type="text" id="col-topic" placeholder="e.g. Session topic">
-    </div>
-    <div class="field">
-      <label>Column name: Key takeaway</label>
-      <input type="text" id="col-takeaway" placeholder="e.g. What did you learn">
-    </div>
-    <div class="field">
-      <label>Column name: Rating (1–5)</label>
-      <input type="text" id="col-rating" placeholder="e.g. How useful was the session">
-    </div>
+    <div class="field"><label>Column name: Pair / Session ID</label><input type="text" id="col-pair" placeholder="e.g. Pair ID"></div>
+    <div class="field"><label>Column name: Topic discussed</label><input type="text" id="col-topic" placeholder="e.g. Session Topic"></div>
+    <div class="field"><label>Column name: Key takeaway</label><input type="text" id="col-takeaway" placeholder="e.g. Key Takeaway"></div>
+    <div class="field"><label>Column name: Rating (1–5)</label><input type="text" id="col-rating" placeholder="e.g. Rating (1-5)"></div>
   </div>
 
   <button id="run-btn" onclick="runAnalysis()" disabled>Analyse responses</button>
-
   <div id="status"></div>
   <div id="results"></div>
-
 </div>
 
 <script>
 let mentorData = null, menteeData = null;
 
-function ev(e, id) { e.preventDefault(); document.getElementById(id).style.background = '#fafaf8'; }
-function lv(id) { document.getElementById(id).style.background = ''; }
+function ev(e,id){e.preventDefault();document.getElementById(id).style.background='#fafaf8';}
+function lv(id){document.getElementById(id).style.background='';}
+function dp(e,type){e.preventDefault();lv(type+'-drop');const f=e.dataTransfer.files[0];if(f)processFile(f,type);}
+function handleFile(e,type){const f=e.target.files[0];if(f)processFile(f,type);}
 
-function dp(e, type) {
-  e.preventDefault();
-  lv(type + '-drop');
-  const file = e.dataTransfer.files[0];
-  if (file) processFile(file, type);
-}
-
-function handleFile(e, type) {
-  const file = e.target.files[0];
-  if (file) processFile(file, type);
-}
-
-function processFile(file, type) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'binary' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(ws, { defval: '' });
-      if (type === 'mentor') {
-        mentorData = data;
-        document.getElementById('mentor-name').textContent = file.name + ' — ' + data.length + ' rows';
-        document.getElementById('mentor-drop').classList.add('loaded');
-      } else {
-        menteeData = data;
-        document.getElementById('mentee-name').textContent = file.name + ' — ' + data.length + ' rows';
-        document.getElementById('mentee-drop').classList.add('loaded');
-      }
-      if (mentorData && menteeData) document.getElementById('run-btn').disabled = false;
-    } catch(err) {
-      setStatus('Could not read file. Make sure it is an Excel or CSV file.', 'danger');
-    }
+function processFile(file,type){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const data=XLSX.utils.sheet_to_json(ws,{defval:''});
+      if(type==='mentor'){mentorData=data;document.getElementById('mentor-name').textContent=file.name+' — '+data.length+' rows';document.getElementById('mentor-drop').classList.add('loaded');}
+      else{menteeData=data;document.getElementById('mentee-name').textContent=file.name+' — '+data.length+' rows';document.getElementById('mentee-drop').classList.add('loaded');}
+      checkReady();
+    }catch(err){setStatus('Could not read file. Make sure it is an Excel or CSV file.','danger');}
   };
   reader.readAsBinaryString(file);
 }
 
-function setStatus(msg, type) {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = type || '';
+function checkReady(){
+  const hasKey=document.getElementById('api-key').value.trim().length>0;
+  document.getElementById('run-btn').disabled=!(mentorData&&menteeData&&hasKey);
 }
 
-function getCol(row, hint) {
-  if (!hint) return '';
-  const h = hint.toLowerCase().trim();
-  for (const k of Object.keys(row)) {
-    if (k.toLowerCase().includes(h)) return String(row[k]);
-  }
-  for (const k of Object.keys(row)) {
-    if (h.split(' ').some(w => w.length > 2 && k.toLowerCase().includes(w))) return String(row[k]);
-  }
-  return '';
+document.getElementById('api-key').addEventListener('input',checkReady);
+
+function setStatus(msg,type){const el=document.getElementById('status');el.textContent=msg;el.className=type||'';}
+
+function getCol(row,hint){
+  if(!hint)return'';
+  const h=hint.toLowerCase().trim();
+  for(const k of Object.keys(row)){if(k.toLowerCase().includes(h))return String(row[k]);}
+  for(const k of Object.keys(row)){if(h.split(' ').some(w=>w.length>2&&k.toLowerCase().includes(w)))return String(row[k]);}
+  return'';
 }
 
-async function runAnalysis() {
-  const pairHint = document.getElementById('col-pair').value.trim();
-  const topicHint = document.getElementById('col-topic').value.trim();
-  const takeawayHint = document.getElementById('col-takeaway').value.trim();
-  const ratingHint = document.getElementById('col-rating').value.trim();
+async function runAnalysis(){
+  const apiKey=document.getElementById('api-key').value.trim();
+  const pairHint=document.getElementById('col-pair').value.trim();
+  const topicHint=document.getElementById('col-topic').value.trim();
+  const takeawayHint=document.getElementById('col-takeaway').value.trim();
+  const ratingHint=document.getElementById('col-rating').value.trim();
 
-  if (!pairHint) { setStatus('Please enter the column name for Pair / Session ID.', 'danger'); return; }
+  if(!pairHint){setStatus('Please enter the column name for Pair / Session ID.','danger');return;}
+  if(!apiKey){setStatus('Please enter your Gemini API key.','danger');return;}
 
-  const btn = document.getElementById('run-btn');
-  btn.disabled = true;
-  btn.textContent = 'Analysing...';
+  const btn=document.getElementById('run-btn');
+  btn.disabled=true;btn.textContent='Analysing...';
   setStatus('Matching pairs...');
 
-  const mentorMap = {};
-  for (const row of mentorData) {
-    const key = getCol(row, pairHint);
-    if (key) mentorMap[key] = row;
-  }
+  const mentorMap={};
+  for(const row of mentorData){const key=getCol(row,pairHint);if(key)mentorMap[key]=row;}
 
-  const pairs = [];
-  for (const row of menteeData) {
-    const key = getCol(row, pairHint);
-    if (key && mentorMap[key]) pairs.push({ key, mentor: mentorMap[key], mentee: row });
-  }
+  const pairs=[];
+  for(const row of menteeData){const key=getCol(row,pairHint);if(key&&mentorMap[key])pairs.push({key,mentor:mentorMap[key],mentee:row});}
 
-  if (pairs.length === 0) {
-    setStatus('No matching pairs found. Check the Pair / Session ID column name matches in both files.', 'danger');
-    btn.disabled = false; btn.textContent = 'Analyse responses';
-    return;
-  }
+  if(pairs.length===0){setStatus('No matching pairs found. Check the Pair / Session ID column name matches in both files.','danger');btn.disabled=false;btn.textContent='Analyse responses';return;}
 
-  setStatus('Analysing ' + pairs.length + ' pair(s)...');
+  setStatus('Analysing '+pairs.length+' pair(s)...');
+  const resultsEl=document.getElementById('results');
+  resultsEl.innerHTML='';
+  let clear=0,review=0,flagged=0;
 
-  const resultsEl = document.getElementById('results');
-  resultsEl.innerHTML = '';
+  for(const pair of pairs){
+    const mTopic=getCol(pair.mentor,topicHint);
+    const eeTopic=getCol(pair.mentee,topicHint);
+    const mTakeaway=getCol(pair.mentor,takeawayHint);
+    const eeTakeaway=getCol(pair.mentee,takeawayHint);
+    const mRating=getCol(pair.mentor,ratingHint);
+    const eeRating=getCol(pair.mentee,ratingHint);
 
-  let clear = 0, review = 0, flagged = 0;
-
-  for (const pair of pairs) {
-    const mTopic = getCol(pair.mentor, topicHint);
-    const eeTopic = getCol(pair.mentee, topicHint);
-    const mTakeaway = getCol(pair.mentor, takeawayHint);
-    const eeTakeaway = getCol(pair.mentee, takeawayHint);
-    const mRating = getCol(pair.mentor, ratingHint);
-    const eeRating = getCol(pair.mentee, ratingHint);
-
-    const prompt = `You are reviewing responses from a reverse mentoring session to check if they appear genuine and consistent.
+    const prompt=`You are reviewing responses from a reverse mentoring session to check if they appear genuine and consistent.
 
 Pair / Session ID: ${pair.key}
 
 MENTOR responses:
-- Topic discussed: ${mTopic || 'not provided'}
-- Key takeaway / what the mentee engaged with: ${mTakeaway || 'not provided'}
-- Rating (1-5): ${mRating || 'not provided'}
+- Topic discussed: ${mTopic||'not provided'}
+- Key takeaway / what the mentee engaged with: ${mTakeaway||'not provided'}
+- Rating (1-5): ${mRating||'not provided'}
 
 MENTEE responses:
-- Topic discussed: ${eeTopic || 'not provided'}
-- Key takeaway / what they will do differently: ${eeTakeaway || 'not provided'}
-- Rating (1-5): ${eeRating || 'not provided'}
+- Topic discussed: ${eeTopic||'not provided'}
+- Key takeaway / what they will do differently: ${eeTakeaway||'not provided'}
+- Rating (1-5): ${eeRating||'not provided'}
 
-Assess these two responses and return ONLY a JSON object with exactly these fields:
+Return ONLY a JSON object with exactly these fields:
 {
   "verdict": "consistent" or "needs_review" or "likely_fake",
   "reason": "one sentence explaining why",
@@ -377,73 +195,71 @@ Assess these two responses and return ONLY a JSON object with exactly these fiel
 }
 
 Verdict guide:
-- consistent: topics match, responses feel independent and genuine, details align
+- consistent: topics match, responses feel independent and genuine
 - needs_review: some inconsistency or vagueness worth a human check
-- likely_fake: topics don't match, responses are identical or copy-paste, extremely generic with no specifics, or clearly AI-generated
+- likely_fake: topics don't match, responses are identical, extremely generic, or directly contradict each other
 
 Return only the JSON. No other text.`;
 
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
+    try{
+      const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
       });
-      const data = await resp.json();
-      const raw = data.content?.[0]?.text || '{}';
+      const data=await resp.json();
+      if(!resp.ok){
+        const errMsg=data?.error?.message||'API error';
+        if(errMsg.toLowerCase().includes('api key')||errMsg.toLowerCase().includes('invalid')){
+          setStatus('Invalid API key. Please check and try again.','danger');
+          btn.disabled=false;btn.textContent='Analyse responses';return;
+        }
+      }
+      const raw=data?.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
       let result;
-      try { result = JSON.parse(raw.replace(/```json|```/g, '').trim()); }
-      catch { result = { verdict: 'needs_review', reason: 'Could not parse AI response.', red_flags: [] }; }
+      try{result=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+      catch{result={verdict:'needs_review',reason:'Could not parse response.',red_flags:[]};}
 
-      if (result.verdict === 'consistent') clear++;
-      else if (result.verdict === 'likely_fake') flagged++;
+      if(result.verdict==='consistent')clear++;
+      else if(result.verdict==='likely_fake')flagged++;
       else review++;
 
-      const labelMap = { consistent: 'Looks consistent', needs_review: 'Needs review', likely_fake: 'Likely fake' };
-      const iconMap = { consistent: 'ti-circle-check', needs_review: 'ti-eye', likely_fake: 'ti-alert-circle' };
+      const labelMap={consistent:'Looks consistent',needs_review:'Needs review',likely_fake:'Likely fake'};
+      const iconMap={consistent:'ti-circle-check',needs_review:'ti-eye',likely_fake:'ti-alert-circle'};
 
-      const card = document.createElement('div');
-      card.className = 'result-card';
-      card.innerHTML = `
+      const card=document.createElement('div');
+      card.className='result-card';
+      card.innerHTML=`
         <div class="result-header">
           <span class="result-id">Pair / Session: ${pair.key}</span>
-          <span class="badge ${result.verdict}">
-            <i class="ti ${iconMap[result.verdict]}" style="font-size:13px; vertical-align:-1px; margin-right:4px;"></i>${labelMap[result.verdict]}
-          </span>
+          <span class="badge ${result.verdict}"><i class="ti ${iconMap[result.verdict]}" style="font-size:13px;vertical-align:-1px;margin-right:4px;"></i>${labelMap[result.verdict]}</span>
         </div>
         <p class="result-reason">${result.reason}</p>
-        ${result.red_flags && result.red_flags.length ? `<div class="red-flags">${result.red_flags.map(f => `<div>⚠ ${f}</div>`).join('')}</div>` : ''}
+        ${result.red_flags&&result.red_flags.length?`<div class="red-flags">${result.red_flags.map(f=>`<div>⚠ ${f}</div>`).join('')}</div>`:''}
         <div class="responses-grid">
-          <div><strong>Mentor</strong>${mTopic ? 'Topic: ' + mTopic + '<br>' : ''}${mTakeaway ? 'Takeaway: ' + mTakeaway : ''}</div>
-          <div><strong>Mentee</strong>${eeTopic ? 'Topic: ' + eeTopic + '<br>' : ''}${eeTakeaway ? 'Takeaway: ' + eeTakeaway : ''}</div>
+          <div><strong>Mentor</strong>${mTopic?'Topic: '+mTopic+'<br>':''}${mTakeaway?'Takeaway: '+mTakeaway:''}</div>
+          <div><strong>Mentee</strong>${eeTopic?'Topic: '+eeTopic+'<br>':''}${eeTakeaway?'Takeaway: '+eeTakeaway:''}</div>
         </div>`;
       resultsEl.appendChild(card);
-
-    } catch(err) {
-      const card = document.createElement('div');
-      card.className = 'result-card';
-      card.innerHTML = `<span style="font-size:13px; color:#888;">Pair ${pair.key} — could not analyse (API error)</span>`;
+    }catch(err){
+      const card=document.createElement('div');
+      card.className='result-card';
+      card.innerHTML=`<span style="font-size:13px;color:#888;">Pair ${pair.key} — could not analyse (${err.message})</span>`;
       resultsEl.appendChild(card);
     }
   }
 
-  const summary = document.createElement('div');
-  summary.className = 'summary-grid';
-  summary.innerHTML = `
+  const summary=document.createElement('div');
+  summary.className='summary-grid';
+  summary.innerHTML=`
     <div class="summary-card s-green"><div class="count">${clear}</div><div class="label">Consistent</div></div>
     <div class="summary-card s-amber"><div class="count">${review}</div><div class="label">Needs review</div></div>
     <div class="summary-card s-red"><div class="count">${flagged}</div><div class="label">Likely fake</div></div>`;
-  resultsEl.insertBefore(summary, resultsEl.firstChild);
+  resultsEl.insertBefore(summary,resultsEl.firstChild);
 
-  setStatus('Done. ' + pairs.length + ' pair(s) analysed.', 'success');
-  btn.disabled = false;
-  btn.textContent = 'Analyse responses';
+  setStatus('Done. '+pairs.length+' pair(s) analysed.','success');
+  btn.disabled=false;btn.textContent='Analyse responses';
 }
 </script>
-
 </body>
 </html>
